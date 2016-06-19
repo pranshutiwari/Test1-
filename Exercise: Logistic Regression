@@ -1,0 +1,23 @@
+NatHealth2011 <- readRDS("~/Research/assignment/dataSets/NatHealth2011.rds")
+library(caTools)
+library(ROCR)
+library(dplyr)
+View(NatHealth2011)
+NatHealth2011omit<-subset(NatHealth2011,!is.na(NatHealth2011$r_maritl))
+NatHealth2011omit2<-subset(NatHealth2011omit,!is.na(NatHealth2011omit$everwrk)) 
+NatHealth2011omit3<-subset(NatHealth2011omit2,!is.na(NatHealth2011omit2$age_p))
+NatHealth2011omit4<-NatHealth2011omit3 %>% filter(everwrk=="1 Yes"|everwrk=="2 No")
+str(NatHealth2011omit4)
+NatHealth2011omit5<-NatHealth2011omit4%>% select(age_p,r_maritl,everwrk)
+View(NatHealth2011omit5)
+trainlog<-glm(everwrk~age_p+r_maritl,data=NatHealth2011omit5,family = binomial)
+summary(trainlog)
+predictwork<-predict(trainlog,data=NatHealth2011omit5,type = "response")
+predictwork
+head(NatHealth2011omit5)
+predictwork[1]
+predictwork[2]
+predictwork[5]
+summary(predictwork)
+tapply(predictwork, NatHealth2011omit5$everwrk, mean)
+tapply(predictwork, NatHealth2011omit5$r_maritl, mean)
